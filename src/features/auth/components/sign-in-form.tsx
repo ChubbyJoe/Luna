@@ -46,7 +46,9 @@ export function SignInForm() {
       }
       setEmail(parsed.data);
       setCode("");
-      setMessage(`We sent a sign in link and a 6 digit code to ${parsed.data}.`);
+      setMessage(
+        `We sent a sign in link and a 6 digit code to ${parsed.data}.`,
+      );
       setStep("code");
     });
   }
@@ -57,7 +59,8 @@ export function SignInForm() {
     const parsedCode = otpCodeSchema.safeParse(code);
     if (!parsedEmail.success || !parsedCode.success) {
       setError(
-        (parsedEmail.error ?? parsedCode.error)?.issues[0].message ?? "Check your details.",
+        (parsedEmail.error ?? parsedCode.error)?.issues[0].message ??
+          "Check your details.",
       );
       return;
     }
