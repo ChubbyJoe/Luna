@@ -8,13 +8,18 @@ export async function GET(request: NextRequest) {
   // Request time only: never prerender this at build, where env vars are absent.
   await connection();
   const keepalive = getKeepaliveEnv();
-  if (request.headers.get("authorization") !== `Bearer ${keepalive.CRON_SECRET}`) {
+  if (
+    request.headers.get("authorization") !== `Bearer ${keepalive.CRON_SECRET}`
+  ) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   const prod = getPublicEnv();
   const results = await Promise.allSettled([
-    pingProject(prod.NEXT_PUBLIC_SUPABASE_URL, prod.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
+    pingProject(
+      prod.NEXT_PUBLIC_SUPABASE_URL,
+      prod.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    ),
     pingProject(
       keepalive.KEEPALIVE_DEV_SUPABASE_URL,
       keepalive.KEEPALIVE_DEV_SUPABASE_PUBLISHABLE_KEY,
