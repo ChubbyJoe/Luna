@@ -12,7 +12,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | # | Feature | Phase | Status |
 |---|---------|-------|--------|
 | 1 | Stack & architecture | Foundation | done |
-| 2 | Coding standards & tooling | Foundation | planned |
+| 2 | Coding standards & tooling | Foundation | done |
 | 3 | Data model | Foundation | planned |
 | 4 | Design system & UI foundation | Foundation | planned |
 | 5 | Core writing loop | Slice 1 | planned |
@@ -36,10 +36,12 @@ spec [0001](../specs/0001-luna-stack-architecture/index.md) · code in `src/`, `
 - [x] Decide the stack (spec): `/architect stack & architecture`
 - [x] Scaffold from the decision: `/develop stack & architecture`
 
-### 2. Coding standards & tooling
+### 2. Coding standards & tooling · done
 Capture conventions from the real scaffolded project, then install lint, format, type checks, and pre commit hooks.
 **Done when:** root `AGENTS.md` reflects the real stack, and lint, format, and pre commit run clean.
-- [ ] Capture conventions + tooling choices: `/audit`
+code in `package.json`, `eslint.config.mjs`, `.prettierrc.json`, `.husky/`
+- [x] Capture conventions + tooling choices: `/audit`
+- [x] Install the chosen tooling: `/develop tooling`
 
 ### 3. Data model · needs a decision
 The shapes everything rests on: users, pages (with parent and order for nesting), blocks and their content, soft delete, favorites, icons and covers, uploaded files, share links.
