@@ -34,6 +34,7 @@ npm install
 npm run dev            # dev server on :3000
 npm run build
 npm run lint && npm run typecheck
+npm run format         # Prettier write (format:check to only check)
 npm test               # Vitest
 npm run test:e2e       # Playwright
 # Migrations: link luna-dev, push, regen types; then luna-prod, push, then merge
@@ -60,8 +61,9 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title/index.md` (plus `rationa
 
 ## Tooling
 
-- ESLint (`eslint-config-next`, installed) + Prettier with `prettier-plugin-tailwindcss` (to install).
-- Pre commit: Husky + lint-staged runs lint and format on staged files, then `npm run typecheck` (to install).
+- ESLint (`eslint-config-next`, with `eslint-config-prettier` last) + Prettier with `prettier-plugin-tailwindcss` (sorts classes in `cn()` and `cva()` too).
+- Prettier skips Markdown, SQL, generated types, and `.claude/skills/` (see `.prettierignore`); docs are edited line by line by the workflow skills.
+- Pre commit: Husky + lint-staged runs `eslint --fix` and Prettier on staged files, then `npm run typecheck` (`.husky/pre-commit`).
 - No CI for now (spec decision); run lint, typecheck, and tests yourself before merging.
 
 ## Git
