@@ -48,17 +48,26 @@ test("menus open with Enter, move with arrows, close with Escape", async ({
   page,
 }) => {
   const trigger = page.getByRole("button", { name: "Page menu" });
-  await trigger.focus();
-  await page.keyboard.press("Enter");
   const menu = page.getByRole("menu");
-  await expect(menu).toBeVisible();
+  // Radix moves focus to the first item only once its keydown listener has
+  // mounted after hydration. An Enter that lands earlier still opens the menu
+  // but leaves focus on the menu itself, so retry until hydration is done.
+  await expect(async () => {
+    if (await menu.isVisible()) await page.keyboard.press("Escape");
+    // An Enter during the close animation is lost, so wait it out.
+    await expect(menu).toBeHidden();
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("menuitem").first()).toBeFocused({
+      timeout: 1000,
+    });
+  }).toPass();
   const focusedItem = () =>
     page.evaluate(() =>
       document.activeElement?.getAttribute("role") === "menuitem"
         ? document.activeElement.textContent
         : null,
     );
-  await expect.poll(focusedItem).not.toBeNull();
   const before = await focusedItem();
   await page.keyboard.press("ArrowDown");
   await expect.poll(focusedItem).not.toBe(before);
