@@ -1,7 +1,7 @@
 # 0003. Luna design system and UI foundation: warm paper tokens, one sans, a quiet shell
 
 **Date**: 2026-10-08
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 
