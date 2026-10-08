@@ -57,6 +57,9 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title/index.md` (plus `rationa
 - **BlockNote renders client only** (`next/dynamic` with `ssr: false`). Signed in data reads go through TanStack Query.
 - **Every migration** regenerates and commits `src/types/database.ts`; apply to dev, then prod, then merge.
 - **Tests with each feature**: Vitest for logic and schemas, Playwright for real flows, and an RLS isolation test (account B cannot read account A) for every new table.
+- **Design system**: build all UI to [docs/design.md](docs/design.md); token values live in `src/app/globals.css`. Lint rejects raw palette or arbitrary color classes (`text-gray-500`, `bg-[#fff]`) everywhere in `src/` except `src/components/ui/`.
+- **Toasts** only through the `notify` helpers in `src/lib/notify.ts`, for background errors and undoable actions, never for visible success.
+- **E2E specs** import `test` and `expect` from `tests/e2e/fixtures.ts`, which fails any test whose page logs a console error.
 - **Conventional commits**: `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`.
 
 ## Tooling
@@ -89,5 +92,6 @@ MCP servers: supabase (connected, `luna-dev` only, never `luna-prod`), Next.js D
 ## Context files
 
 <!-- Nested AGENTS.md files are listed here as they are created -->
+- [src/features/shell/AGENTS.md](src/features/shell/AGENTS.md): the signed in shell (sidebar, top bar, account menu, mobile drawer, error states)
 
 _Drafted by /audit from the repo, worth a quick human pass. Edit freely: once a line stops matching this draft, later runs treat it as curated and will flag rather than overwrite it._

@@ -1,7 +1,7 @@
 # 0002. Luna data model: pages tree with side tables, shipped additively
 
 **Date**: 2026-10-07
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 
