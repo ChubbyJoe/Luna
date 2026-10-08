@@ -39,7 +39,50 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pages: {
+        Row: {
+          content: Json
+          content_text: string
+          created_at: string
+          id: string
+          owner_id: string
+          parent_id: string | null
+          position: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          content_text?: string
+          created_at?: string
+          id?: string
+          owner_id?: string
+          parent_id?: string | null
+          position: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          content_text?: string
+          created_at?: string
+          id?: string
+          owner_id?: string
+          parent_id?: string | null
+          position?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pages_parent_fkey"
+            columns: ["parent_id", "owner_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id", "owner_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

@@ -3,6 +3,9 @@ import { connection } from "next/server";
 import type { ReactNode } from "react";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { NewPageAction } from "@/features/pages/components/new-page-button";
+import { PageList } from "@/features/pages/components/page-list";
+import { PendingSavesProvider } from "@/features/pages/pending-saves";
 import { AppSidebar } from "@/features/shell/components/app-sidebar";
 import { SkipLink } from "@/features/shell/components/skip-link";
 import { readSidebarDefaultOpen } from "@/features/shell/sidebar-state";
@@ -29,10 +32,17 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <>
       <SkipLink />
       <SidebarProvider defaultOpen={defaultOpen} className="flex-1">
-        <AppSidebar email={email} />
-        <SidebarInset id="main" tabIndex={-1} className="outline-none">
-          {children}
-        </SidebarInset>
+        {/* Save sessions live here, above the page, so a save outlives navigation. */}
+        <PendingSavesProvider>
+          <AppSidebar
+            email={email}
+            pages={<PageList />}
+            pagesAction={<NewPageAction />}
+          />
+          <SidebarInset id="main" tabIndex={-1} className="outline-none">
+            {children}
+          </SidebarInset>
+        </PendingSavesProvider>
       </SidebarProvider>
     </>
   );

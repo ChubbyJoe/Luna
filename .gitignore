@@ -50,3 +50,6 @@ next-env.d.ts
 
 # supabase cli
 supabase/.temp/
+
+# playwright test sessions (minted per run)
+/tests/e2e/.auth/
