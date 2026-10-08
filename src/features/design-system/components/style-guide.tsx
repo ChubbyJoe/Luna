@@ -7,6 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
+import {
+  FeedbackDemos,
+  OverlayDemos,
+  StateDemos,
+  ThemeSwitch,
+} from "./style-guide-demos";
+
 // Literal class names so Tailwind generates every swatch.
 const COLOR_TOKENS = [
   { name: "background", className: "bg-background", use: "Page surface" },
@@ -53,6 +60,26 @@ const TYPE_STEPS = [
   { name: "text-xs", className: "text-xs" },
 ] as const;
 
+// Chrome uses 1 to 3, page layout 4 to 16 (Tailwind's 4px scale).
+const SPACING_STEPS = [
+  { name: "1", px: 4, className: "w-1" },
+  { name: "1.5", px: 6, className: "w-1.5" },
+  { name: "2", px: 8, className: "w-2" },
+  { name: "3", px: 12, className: "w-3" },
+  { name: "4", px: 16, className: "w-4" },
+  { name: "6", px: 24, className: "w-6" },
+  { name: "8", px: 32, className: "w-8" },
+  { name: "12", px: 48, className: "w-12" },
+  { name: "16", px: 64, className: "w-16" },
+] as const;
+
+const RADIUS_STEPS = [
+  { name: "rounded-sm", use: "Small controls", className: "rounded-sm" },
+  { name: "rounded-md", use: "Buttons, inputs", className: "rounded-md" },
+  { name: "rounded-lg", use: "Menus, cards", className: "rounded-lg" },
+  { name: "rounded-xl", use: "Dialogs", className: "rounded-xl" },
+] as const;
+
 const BUTTON_VARIANTS = [
   "default",
   "outline",
@@ -66,7 +93,10 @@ export function StyleGuide() {
   return (
     <div className="flex flex-col gap-16">
       <header className="flex flex-col gap-2">
-        <h1 className="text-title-sm md:text-title">Style guide</h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-title-sm md:text-title">Style guide</h1>
+          <ThemeSwitch />
+        </div>
         <p className="text-body text-muted-foreground">
           Every token and base component in Luna, in the current theme. The
           written rules live in{" "}
@@ -106,6 +136,50 @@ export function StyleGuide() {
             </li>
           ))}
         </ul>
+      </Section>
+
+      <Section title="Spacing">
+        <ul className="flex flex-col gap-2">
+          {SPACING_STEPS.map((step) => (
+            <li key={step.name} className="flex items-center gap-4">
+              <span className="w-24 font-mono text-xs text-muted-foreground">
+                {step.name} · {step.px}px
+              </span>
+              <span
+                className={cn("h-4 rounded-sm bg-ring", step.className)}
+                aria-hidden="true"
+              />
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section title="Radius">
+        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {RADIUS_STEPS.map((step) => (
+            <li key={step.name} className="flex flex-col gap-2">
+              <div
+                className={cn("h-16 border bg-muted", step.className)}
+                aria-hidden="true"
+              />
+              <span className="font-mono text-xs">{step.name}</span>
+              <span className="text-xs text-muted-foreground">{step.use}</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section title="Links">
+        <p className="text-body">
+          Body text with{" "}
+          <a
+            href="#main"
+            className="rounded-sm text-link underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring"
+          >
+            an inline link
+          </a>
+          , the only place color appears besides the focus ring.
+        </p>
       </Section>
 
       <Section title="Buttons">
@@ -159,6 +233,18 @@ export function StyleGuide() {
             </p>
           </div>
         </div>
+      </Section>
+
+      <Section title="Menus and overlays">
+        <OverlayDemos />
+      </Section>
+
+      <Section title="Feedback">
+        <FeedbackDemos />
+      </Section>
+
+      <Section title="States">
+        <StateDemos />
       </Section>
     </div>
   );
