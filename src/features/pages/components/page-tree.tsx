@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -35,12 +36,19 @@ import {
 import { EmptyState } from "@/features/shell/components/empty-state";
 import { cn } from "@/lib/utils";
 
+import { useCanDrag } from "../hooks/use-can-drag";
 import { useCreatePage } from "../hooks/use-create-page";
 import {
   useExpandedPages,
   useExpandedStore,
 } from "../hooks/use-expanded-pages";
 import { useMovePage } from "../hooks/use-move-page";
+import {
+  useEndZoneDrop,
+  useRowDrag,
+  useTreeDragMonitor,
+  type TreeDrag,
+} from "../hooks/use-tree-drag";
 import { useTreeUi } from "../hooks/use-tree-ui";
 import { useSessions } from "../pending-saves";
 import { moveTargets, placementFor, type Placement } from "../placement";
@@ -73,8 +81,23 @@ const INDENT_CLASSES = [
   "pl-31",
 ];
 
-function indentClass(depth: number): string {
-  return INDENT_CLASSES[Math.min(depth - 1, INDENT_CLASSES.length - 1)];
+// The drop line starts where the row's content does.
+const LINE_INSET_CLASSES = [
+  "left-1",
+  "left-4",
+  "left-7",
+  "left-10",
+  "left-13",
+  "left-16",
+  "left-19",
+  "left-22",
+  "left-25",
+  "left-28",
+  "left-31",
+];
+
+function byDepth(classes: string[], depth: number): string {
+  return classes[Math.min(depth - 1, classes.length - 1)];
 }
 
 // The sidebar's Pages section, wired to the page list, save sessions, create,
@@ -139,13 +162,20 @@ function activePageId(pathname: string): string | null {
 
 type ElementRefs<T> = RefObject<Map<string, T>>;
 
-// Keeps a page id to element map current as rows mount and unmount.
-function refInto<T>(refs: ElementRefs<T>, id: string) {
+// Keeps a page id to element map current as rows mount and unmount, and
+// optionally a ref of the row's own.
+function refInto<T>(
+  refs: ElementRefs<T>,
+  id: string,
+  own?: RefObject<T | null>,
+) {
   return (element: T | null) => {
     if (!element) return;
     refs.current.set(id, element);
+    if (own) own.current = element;
     return () => {
       refs.current.delete(id);
+      if (own) own.current = null;
     };
   };
 }
@@ -162,6 +192,7 @@ type RowProps = {
   // does not take focus back from it.
   takeDialogOpening: () => boolean;
   hrefFor: (id: string) => string;
+  drag: TreeDrag;
   onToggle: (id: string, open: boolean) => void;
   onAddChild: (parentId: string) => void;
   onMoveTo: (id: string) => void;
@@ -198,6 +229,19 @@ export function PageTreeView({
   const pendingReveal = useRef<string | null>(null);
   const pendingFocus = useRef<FocusRequest | null>(null);
   const [, setFocusTick] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const endZoneRef = useRef<HTMLDivElement>(null);
+  const expandOne = useCallback((id: string) => store.expand([id]), [store]);
+  const drag = useTreeDragMonitor({
+    enabled: useCanDrag(),
+    list,
+    expanded,
+    container: containerRef,
+    expand: expandOne,
+    // A failed drop needs no focus change; the toast and rollback say it.
+    onMove: (id, placement) => onMove(id, placement, { onError: () => {} }),
+  });
+  const overEndZone = useEndZoneDrop(drag, endZoneRef);
   // Reveal reads the list at the moment you navigate or move, not on every
   // change, so an ancestor you collapse by hand stays collapsed until then.
   const listRef = useRef(list);
@@ -303,18 +347,28 @@ export function PageTreeView({
       return opening;
     },
     hrefFor,
+    drag,
     onToggle: (id, open) => (open ? store.expand([id]) : store.collapse(id)),
     onAddChild,
     onMoveTo: openMoveTo,
   };
 
   return (
-    <>
+    <div ref={containerRef} className="flex min-h-0 flex-1 flex-col">
       {tree.length === 0 ? (
         <EmptyState>No pages yet</EmptyState>
       ) : (
         <TreeList nodes={tree} rowProps={rowProps} />
       )}
+      {/* Drop here for the end of the top level (AC-6). */}
+      <div
+        ref={endZoneRef}
+        aria-hidden="true"
+        data-testid="page-tree-end"
+        className="relative min-h-10 flex-1"
+      >
+        {overEndZone && <DropLine edge="top" depth={1} />}
+      </div>
       <div aria-live="polite" className="sr-only">
         {announcement}
       </div>
@@ -330,7 +384,22 @@ export function PageTreeView({
           onCloseAutoFocus={onDialogCloseAutoFocus}
         />
       )}
-    </>
+    </div>
+  );
+}
+
+// A 2px line before or after a row, inset to where its content starts.
+function DropLine({ edge, depth }: { edge: "top" | "bottom"; depth: number }) {
+  return (
+    <span
+      aria-hidden="true"
+      data-drop-line={edge}
+      className={cn(
+        "pointer-events-none absolute right-1 h-0.5 rounded-full bg-sidebar-primary",
+        edge === "top" ? "-top-px" : "-bottom-px",
+        byDepth(LINE_INSET_CLASSES, depth),
+      )}
+    />
   );
 }
 
@@ -369,17 +438,36 @@ function TreeRow({ node, rowProps }: { node: TreeNode; rowProps: RowProps }) {
   const isExpanded = hasChildren && expanded.has(page.id);
   const isActive = activeId === page.id;
   const childListId = `sub-pages-${page.id}`;
+  const rowRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<HTMLAnchorElement>(null);
+  const { drag } = rowProps;
+  const zone = useRowDrag({
+    drag,
+    rowRef,
+    handleRef,
+    id: page.id,
+    depth,
+    canExpandOnHover: hasChildren && !isExpanded,
+  });
 
   return (
     <li className="min-w-0">
       <div
+        ref={rowRef}
         data-active={isActive || undefined}
         data-moved={movedId === page.id || undefined}
+        data-drop-inside={zone === "inside" || undefined}
+        data-dragging={drag.draggingId === page.id || undefined}
         className={cn(
-          "group/row flex h-7 min-w-0 items-center gap-0.5 rounded-md pr-1 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-moved:bg-sidebar-accent data-moved:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground",
-          indentClass(depth),
+          "group/row relative flex h-7 min-w-0 items-center gap-0.5 rounded-md pr-1 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-dragging:opacity-50 data-drop-inside:bg-sidebar-accent data-moved:bg-sidebar-accent data-moved:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground",
+          byDepth(INDENT_CLASSES, depth),
         )}
       >
+        {zone === "before" && <DropLine edge="top" depth={depth} />}
+        {zone === "after" && (
+          // Below an open row, the page lands as its first sub page.
+          <DropLine edge="bottom" depth={isExpanded ? depth + 1 : depth} />
+        )}
         {hasChildren ? (
           <IconTip label={isExpanded ? "Hide sub pages" : "Show sub pages"}>
             <Button
@@ -402,8 +490,11 @@ function TreeRow({ node, rowProps }: { node: TreeNode; rowProps: RowProps }) {
           <span aria-hidden="true" className="size-6 shrink-0" />
         )}
         <Link
-          ref={refInto(rowProps.linkRefs, page.id)}
+          ref={refInto(rowProps.linkRefs, page.id, handleRef)}
           href={hrefFor(page.id)}
+          // The row is the drag source (its link is the handle), so the drag
+          // shows the row, not the browser's link preview.
+          draggable={drag.enabled ? false : undefined}
           aria-current={isActive ? "page" : undefined}
           className="min-w-0 flex-1 truncate rounded-sm px-1 leading-6 outline-none focus-visible:ring-3 focus-visible:ring-ring"
         >

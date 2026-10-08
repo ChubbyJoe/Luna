@@ -167,3 +167,12 @@ export function moveAnnouncement(title: string, parentTitle: string | null) {
     ? `Moved ${title} to the top level`
     : `Moved ${title} into ${parentTitle}`;
 }
+
+// Pragmatic's tree item hitbox, top 25% / middle 50% / bottom 25%, as a zone.
+// "reparent" is blocked in this tree, so it (and a blocked one) is no zone.
+export function zoneFromInstruction(type: string | undefined): DropZone | null {
+  if (type === "reorder-above") return "before";
+  if (type === "reorder-below") return "after";
+  if (type === "make-child") return "inside";
+  return null;
+}

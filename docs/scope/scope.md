@@ -89,10 +89,10 @@ Pages inside pages, shown as a collapsible tree in the sidebar. Create a sub pag
 **Done when:** you can nest pages to any depth, move and reorder them in the sidebar, and the tree survives a reload.
 spec [0005](../specs/0005-page-tree-sidebar/index.md) · code in `src/features/pages/`, `supabase/migrations/`, `tests/`
 - [x] Design it (spec): `/architect page tree & sidebar`
-- [ ] Build it: `/develop page tree & sidebar`
+- [x] Build it: `/develop page tree & sidebar`
   - [x] M1 nest and see the tree: spec 0002 M2 trigger and db tests, tree helpers, expand state per account, recursive sidebar rows with + to add a sub page, reveal, breadcrumb path (AC-1 to AC-5, AC-11)
   - [x] M2 move with the dialog: placement helpers, optimistic move mutation with rollback, … menu and Move to command dialog, live region, focus refetch, mobile and two tab e2e (AC-8 to AC-10, AC-12 to AC-14)
-  - [ ] M3 drag and drop: Pragmatic drag and drop with before, inside, after zones, end zone, hover expand, auto scroll, invalid targets, drag e2e (AC-6 to AC-8, AC-12)
+  - [x] M3 drag and drop: Pragmatic drag and drop with before, inside, after zones, end zone, hover expand, auto scroll, invalid targets, drag e2e (AC-6 to AC-8, AC-12)
 - [ ] Verify it: `/check verify page tree & sidebar`
 
 ## Slice 3: Block editor

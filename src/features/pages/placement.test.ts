@@ -6,6 +6,7 @@ import {
   moveAnnouncement,
   moveTargets,
   placementFor,
+  zoneFromInstruction,
   type MoveTarget,
 } from "./placement";
 import { comparePositioned } from "./position";
@@ -248,5 +249,19 @@ describe("moveAnnouncement", () => {
     expect(moveAnnouncement("Notes", null)).toBe(
       "Moved Notes to the top level",
     );
+  });
+});
+
+describe("zoneFromInstruction", () => {
+  it("maps the tree item hitbox to before, inside, and after", () => {
+    expect(zoneFromInstruction("reorder-above")).toBe("before");
+    expect(zoneFromInstruction("make-child")).toBe("inside");
+    expect(zoneFromInstruction("reorder-below")).toBe("after");
+  });
+
+  it("gives no zone for a blocked or missing instruction", () => {
+    expect(zoneFromInstruction("instruction-blocked")).toBeNull();
+    expect(zoneFromInstruction("reparent")).toBeNull();
+    expect(zoneFromInstruction(undefined)).toBeNull();
   });
 });

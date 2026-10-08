@@ -97,7 +97,8 @@ export function AppSidebar({
         </Tooltip>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
+        {/* Grows, so the page tree's end drop zone fills the space below it. */}
+        <SidebarGroup className="flex-1">
           <SidebarGroupLabel>Pages</SidebarGroupLabel>
           {pagesAction}
           {pages}

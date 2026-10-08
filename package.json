@@ -17,6 +17,9 @@
     "test:db": "vitest run --project db"
   },
   "dependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "4.0.0",
+    "@atlaskit/pragmatic-drag-and-drop-auto-scroll": "3.2.1",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "3.0.0",
     "@blocknote/core": "0.55.0",
     "@blocknote/react": "0.55.0",
     "@blocknote/shadcn": "0.55.0",
