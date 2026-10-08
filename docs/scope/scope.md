@@ -77,7 +77,7 @@ spec [0004](../specs/0004-core-writing-loop/index.md) · code in `src/features/p
 - [ ] Build it: `/develop core writing loop`
   - [x] M1 thin thread: spec 0002 M1 migration and types, test sign in setup and RLS db suite, sidebar list and New page, home redirect, `/p/<id>` with title and paragraph only BlockNote, first debounced save (AC-1 to AC-5, AC-10, AC-11, AC-13)
   - [x] M2 save robustness: full save sessions in the registry, max wait and flushes, retries and toasts, leave warning, sign out flush (AC-3, AC-8, AC-9, AC-12, AC-14)
-  - [ ] M3 conflict guard: `updated_at` conflict check, Load newer and Keep mine notice, gone state (AC-7, AC-14)
+  - [x] M3 conflict guard: `updated_at` conflict check, Load newer and Keep mine notice, gone state (AC-7, AC-14)
   - [ ] M4 writing feel: title keyboard moves, live title everywhere, autofocus, placeholder, unknown block guard (AC-5, AC-6)
 - [ ] Verify it: `/check verify core writing loop`
 - [ ] Test it: `/test core writing loop`
