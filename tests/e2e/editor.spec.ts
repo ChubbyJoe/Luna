@@ -77,6 +77,100 @@ test.describe("body", () => {
     await expect(paragraphs(page)).toHaveText(["Big heading", "Bold words"]);
     await expectSaved(page);
   });
+
+  test("pastes plain text exactly: spaces, tabs, blank lines", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await createPage(page);
+    await page.keyboard.press("Enter");
+    await expect(editableBody(page)).toBeFocused();
+    await settle(page);
+    await page.keyboard.type("Ab");
+    await expect(paragraphs(page)).toHaveText(["Ab"]);
+    await page.keyboard.press("ArrowLeft");
+    await settle(page);
+
+    const text = "x  y \n\n\tz";
+    await paste(editableBody(page), `<p>${text}</p>`, text);
+
+    // Raw text: `toHaveText` would normalize the very whitespace under test.
+    const expected = ["Ax  y ", "", "\tzb"];
+    await expect
+      .poll(() => paragraphs(page).allTextContents())
+      .toEqual(expected);
+    await expectSaved(page);
+
+    await page.reload();
+    await expect
+      .poll(() => paragraphs(page).allTextContents())
+      .toEqual(expected);
+  });
+
+  test("splits a paste on every line ending: \\r\\n, \\r, \\n", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await createPage(page);
+    await page.keyboard.press("Enter");
+    await expect(editableBody(page)).toBeFocused();
+    await settle(page);
+
+    const text = "one\r\ntwo\rthree\n";
+    await paste(editableBody(page), `<p>${text}</p>`, text);
+
+    // The trailing line break leaves the caret in a new empty paragraph.
+    await expect
+      .poll(() => paragraphs(page).allTextContents())
+      .toEqual(["one", "two", "three", ""]);
+    await page.keyboard.type("four");
+    await expect
+      .poll(() => paragraphs(page).allTextContents())
+      .toEqual(["one", "two", "three", "four"]);
+    await expectSaved(page);
+  });
+
+  test("keeps pasted markup characters as literal text", async ({ page }) => {
+    await page.goto("/");
+    await createPage(page);
+    await page.keyboard.press("Enter");
+    await expect(editableBody(page)).toBeFocused();
+    await settle(page);
+
+    const text = "<b>bold</b> & <i>x</i> &amp;";
+    await paste(editableBody(page), "<p>ignored</p>", text);
+
+    await expect.poll(() => paragraphs(page).allTextContents()).toEqual([text]);
+    await expect(body(page).locator("b, i, strong, em")).toHaveCount(0);
+    await expectSaved(page);
+
+    await page.reload();
+    await expect.poll(() => paragraphs(page).allTextContents()).toEqual([text]);
+  });
+
+  test("replaces the selected text with the pasted lines", async ({ page }) => {
+    await page.goto("/");
+    await createPage(page);
+    await page.keyboard.press("Enter");
+    await expect(editableBody(page)).toBeFocused();
+    await settle(page);
+    await page.keyboard.type("Hello world");
+    await expect(paragraphs(page)).toHaveText(["Hello world"]);
+
+    for (let step = 0; step < "world".length; step++) {
+      await settle(page);
+      await page.keyboard.press("Shift+ArrowLeft");
+    }
+    await settle(page);
+
+    const text = "there\nfriend";
+    await paste(editableBody(page), `<p>${text}</p>`, text);
+
+    await expect
+      .poll(() => paragraphs(page).allTextContents())
+      .toEqual(["Hello there", "friend"]);
+    await expectSaved(page);
+  });
 });
 
 test.describe("title", () => {

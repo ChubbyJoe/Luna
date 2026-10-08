@@ -42,19 +42,18 @@ const dictionary = {
   },
 };
 
-function escapeHtml(text: string): string {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
-
-// Pasted rich text arrives as plain paragraphs, one per line.
-function plainParagraphs(text: string): string {
-  return text
-    .split(/\r\n|\r|\n/)
-    .map((line) => `<p>${escapeHtml(line)}</p>`)
-    .join("");
+// Pasted rich text arrives as plain paragraphs, one per line. The text goes
+// in as is, not through HTML: parsing HTML collapses spaces and tabs, trims
+// line ends, and drops blank lines.
+function pastePlainText(editor: PageEditorInstance, text: string) {
+  editor.transact((tr) => {
+    text.split(/\r\n|\r|\n/).forEach((line, index) => {
+      // Depth 2 splits the paragraph and its block, starting a new block.
+      if (index > 0) tr.split(tr.selection.from, 2);
+      tr.insertText(line);
+    });
+    tr.scrollIntoView();
+  });
 }
 
 // The caret sits before the first character of the first block. Read from
@@ -99,7 +98,7 @@ export function PageEditor({
     links: noLinks,
     pasteHandler: ({ event, editor: target }) => {
       const text = event.clipboardData?.getData("text/plain") ?? "";
-      if (text !== "") target.pasteHTML(plainParagraphs(text));
+      if (text !== "") pastePlainText(target, text);
       return true;
     },
   });
