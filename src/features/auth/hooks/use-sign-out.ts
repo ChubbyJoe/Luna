@@ -3,24 +3,24 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
-import { Button } from "@/components/ui/button";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { notify } from "@/lib/notify";
 
-export function SignOutButton() {
+export function useSignOut(): { signOut: () => void; pending: boolean } {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
   function signOut() {
     startTransition(async () => {
-      await getSupabaseBrowserClient().auth.signOut();
+      const { error } = await getSupabaseBrowserClient().auth.signOut();
+      if (error) {
+        notify.error("Could not sign you out. Try again.");
+        return;
+      }
       router.replace("/sign-in");
       router.refresh();
     });
   }
 
-  return (
-    <Button variant="outline" onClick={signOut} disabled={pending}>
-      {pending ? "Signing out…" : "Sign out"}
-    </Button>
-  );
+  return { signOut, pending };
 }

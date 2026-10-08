@@ -32,5 +32,15 @@ for (const colorScheme of COLOR_SCHEMES) {
         await expectNoViolations(page);
       });
     }
+
+    test("/dev/ui/shell has no axe violations, menu closed and open", async ({
+      page,
+    }) => {
+      await page.goto("/dev/ui/shell");
+      await expectNoViolations(page);
+      await page.getByRole("button", { name: "you@example.com" }).click();
+      await expect(page.getByRole("menu")).toBeVisible();
+      await expectNoViolations(page);
+    });
   });
 }

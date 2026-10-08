@@ -62,7 +62,7 @@ spec [0003](../specs/0003-design-system-ui-foundation/index.md)
 - [x] Design it (spec): `/architect design system & UI foundation`
 - [ ] Build it: `/develop design system & UI foundation`
   - [x] M1 token thread: warm paper tokens, Inter, next-themes, `/dev/ui`, axe and contrast tests in both themes (AC-2, AC-3, AC-8, AC-14, AC-15)
-  - [ ] M2 shell: sidebar, top bar, account menu, mobile drawer, `(app)` layout, `/dev/ui/shell` (AC-3 to AC-6)
+  - [x] M2 shell: sidebar, top bar, account menu, mobile drawer, `(app)` layout, `/dev/ui/shell` (AC-3 to AC-6)
   - [ ] M3 components and states: overlays, toasts, error and not found pages, sign in restyle (AC-7, AC-9, AC-10, AC-12, AC-13)
   - [ ] M4 guardrails and docs: color lint rule, keyboard and motion e2e, `docs/design.md` (AC-1, AC-7, AC-9, AC-11)
 - [ ] Verify it: `/check verify design system & UI foundation`
