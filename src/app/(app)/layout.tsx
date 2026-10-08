@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import type { ReactNode } from "react";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -12,6 +13,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export const instant = false;
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
+  // getClaims compares the token expiry to Date.now(), so render at request time.
+  await connection();
   const supabase = await createSupabaseServerClient();
   // getClaims verifies the JWT; never trust getSession() on the server.
   const { data } = await supabase.auth.getClaims();
