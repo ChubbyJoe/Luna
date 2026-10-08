@@ -53,8 +53,8 @@ Run against `npm run dev` (luna-dev). Account A and account B are the two test a
 - [x] `npm run lint && npm run typecheck` → no errors → all
 - [x] `npm test` → unit suite passes (`save-machine`, `blocks-to-plain-text`, `position`, `schemas`, `title`) → AC-3, AC-4, AC-5, AC-7, AC-8, AC-12
 - [x] `npm run test:db` → db suite passes against luna-dev (isolation, `anon` denied, protected columns, limits, `updated_at` guard and trigger) → AC-7, AC-10, AC-12, AC-13
-- [ ] `npm run test:e2e` → all specs pass, including `writing`, `saving`, `conflict`, `editor` → AC-1 to AC-11, AC-14
-- [ ] `npx supabase migration list --linked` → `20261008091629_pages_core` applied on luna-dev; on luna-prod too before merge → AC-13
+- [x] `npm run test:e2e` → all specs pass, including `writing`, `saving`, `conflict`, `editor` → AC-1 to AC-11, AC-14
+- [x] `npx supabase migration list --linked` → `20261008091629_pages_core` applied on luna-dev; on luna-prod too before merge → AC-13
 - [x] `src/types/database.ts` contains `pages` and is committed → AC-13
 
 ## Acceptance-criteria coverage
