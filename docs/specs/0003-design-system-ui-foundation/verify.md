@@ -16,18 +16,18 @@ _Steps derived from spec 0003 acceptance criteria. `/check verify` runs these; `
 - [x] Click "Show error toast" → toast bottom right in the current theme, gone after about 8s. Click "Show undo toast" → it stays; press Alt+T, Tab to "Undo", Enter → "Restored" toast → AC-13
 - [x] Click "Throw" under States → "Something went wrong" with "Try again" and no error message; "Try again" brings the content back → AC-12
 - [x] Visit `/no-such-route` → "This page does not exist" with a link home → AC-12
-- [ ] Open `/sign-in` in both themes → Luna wordmark top left, Inter, warm tokens; sending a link and entering a code work as before → AC-10
-- [ ] Sign in for real → the home page shows inside the shell with your email in the account menu, and "Sign out" in that menu returns you to `/sign-in` → AC-4
+- [x] Open `/sign-in` in both themes → Luna wordmark top left, Inter, warm tokens; sending a link and entering a code work as before → AC-10
+- [x] Sign in for real → the home page shows inside the shell with your email in the account menu, and "Sign out" in that menu returns you to `/sign-in` → AC-4
 - [x] Open the browser console on `/dev/ui`, `/dev/ui/shell`, and `/sign-in` in both themes → no errors → AC-14
 
 ## Value sourcing
-- [ ] Account menu email: sign in as two different accounts → each sees its own email (from `getClaims()`), never the other's → AC-4
+- [x] Account menu email: sign in as two different accounts → each sees its own email (from `getClaims()`), never the other's → AC-4
 - [x] Sidebar first render: set cookie `sidebar_state` to `false`, `true`, deleted, and `garbage`, then reload `/dev/ui/shell` → closed only for `false` → AC-5
 - [x] Sidebar toggle: toggle once and inspect cookies → `sidebar_state` updated with a one year max age → AC-5
 - [x] Theme on load: clear localStorage `theme` and switch the OS theme → Luna follows it; set it to `dark` with the OS light → Luna stays dark → AC-3
 - [x] Mobile or desktop: resize across 768px → the sidebar switches between drawer and fixed panel → AC-6
-- [ ] Breadcrumb trail: home route shows no breadcrumbs; the preview shows five folded to three → AC-4
-- [ ] Top bar status: the preview shows "Saved" from its `status` prop; home shows nothing → AC-4
+- [x] Breadcrumb trail: home route shows no breadcrumbs; the preview shows five folded to three → AC-4
+- [x] Top bar status: the preview shows "Saved" from its `status` prop; home shows nothing → AC-4
 - [x] Style guide availability: `npm run build && npx next start -p 3001` → `/dev/ui` and `/dev/ui/shell` return 404 → AC-8
 - [x] Shell preview data: `you@example.com` and Work, Projects, Luna, Design, Notes come from `shell-preview.tsx` constants → AC-8
 - [x] Trigger visibility: with JS blocked, the desktop "Show sidebar" button is hidden when expanded and shown when the cookie says collapsed → AC-5
@@ -38,7 +38,7 @@ _Steps derived from spec 0003 acceptance criteria. `/check verify` runs these; `
 
 ## Commands
 - [x] `npm test` → all pass, including `contrast.test.ts` (every pair, both themes), `design-doc.test.ts`, `lint-colors.test.ts`, and the production 404 guards → AC-1, AC-8, AC-11, AC-15
-- [ ] `npm run test:e2e` → all pass: `a11y.spec.ts` (zero axe violations in both themes on `/dev/ui`, `/dev/ui/shell` with the menu closed and open, `/sign-in`), `shell.spec.ts`, `keyboard.spec.ts`, `feedback.spec.ts`, `sign-in.spec.ts` → AC-2 to AC-10, AC-12 to AC-14
+- [x] `npm run test:e2e` → all pass: `a11y.spec.ts` (zero axe violations in both themes on `/dev/ui`, `/dev/ui/shell` with the menu closed and open, `/sign-in`), `shell.spec.ts`, `keyboard.spec.ts`, `feedback.spec.ts`, `sign-in.spec.ts` → AC-2 to AC-10, AC-12 to AC-14
 - [x] Add `const a = "text-gray-500";` to any file in `src/features/` and run `npm run lint` → it fails with the design token message; remove it → passes → AC-11
 - [x] `npm run lint && npm run typecheck` → clean
 

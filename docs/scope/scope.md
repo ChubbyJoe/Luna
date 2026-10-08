@@ -14,7 +14,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Data model | Foundation | in-progress |
-| 4 | Design system & UI foundation | Foundation | in-progress |
+| 4 | Design system & UI foundation | Foundation | done |
 | 5 | Core writing loop | Slice 1 | planned |
 | 6 | Page tree & sidebar | Slice 2 | planned |
 | 7 | Block editor | Slice 3 | planned |
@@ -55,7 +55,7 @@ spec [0002](../specs/0002-data-model/index.md)
   - [ ] M8 share links, with feature 13 (AC-11)
 - [ ] Verify it: `/check verify data model`
 
-### 4. Design system & UI foundation · in-progress
+### 4. Design system & UI foundation · done
 The calm, uncluttered look that makes Luna "Notion, but easier": type, color, spacing, layout shell (sidebar plus page), base components, keyboard focus.
 **Done when:** `design.md` covers type, color, spacing, and components, and base components work fully by keyboard with good contrast.
 spec [0003](../specs/0003-design-system-ui-foundation/index.md) · code in `src/app/globals.css`, `src/features/shell/`, `src/features/design-system/`, `docs/design.md`
@@ -65,7 +65,7 @@ spec [0003](../specs/0003-design-system-ui-foundation/index.md) · code in `src/
   - [x] M2 shell: sidebar, top bar, account menu, mobile drawer, `(app)` layout, `/dev/ui/shell` (AC-3 to AC-6)
   - [x] M3 components and states: overlays, toasts, error and not found pages, sign in restyle (AC-7, AC-9, AC-10, AC-12, AC-13)
   - [x] M4 guardrails and docs: color lint rule, keyboard and motion e2e, `docs/design.md` (AC-1, AC-7, AC-9, AC-11)
-- [ ] Verify it: `/check verify design system & UI foundation`
+- [x] Verify it: `/check verify design system & UI foundation`
 
 ## Slice 1: Core writing loop
 
