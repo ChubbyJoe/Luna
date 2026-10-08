@@ -18,6 +18,7 @@ The frame around every signed in page: sidebar, top bar, page column, account me
 - The cookie name `sidebar_state` must match `SIDEBAR_COOKIE_NAME` in the generated `src/components/ui/sidebar.tsx`.
 - The sidebar toggles with Cmd+\ or Ctrl+\ (`SIDEBAR_KEYBOARD_SHORTCUT`). Cmd+B and Ctrl+B stay free for bold in the editor.
 - Links inside the mobile drawer close it and then move focus to `#main` (`close-drawer-on-navigate.tsx`); move focus only after the drawer has closed, or its focus trap undoes it.
+- Opening the mobile drawer focuses the open page's row (`[aria-current="page"]`), else the drawer itself (`onMobileOpenAutoFocus` in `app-sidebar.tsx`), never a row button: its tooltip would swallow the first Escape.
 - Server code that calls `getClaims()` must `await connection()` first: it compares the token expiry to `Date.now()`, which Cache Components rejects during prerendering.
 - `useIsMobile` (`src/hooks/use-mobile.ts`) is false on the server; the client corrects it on hydration.
 - Tests: `breadcrumbs.test.ts`, `sidebar-state.test.ts`, and `tests/e2e/shell.spec.ts`.
