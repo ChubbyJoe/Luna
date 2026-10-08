@@ -1,14 +1,14 @@
 import { expect, test as base } from "@playwright/test";
 
 // Every page test fails if the page logs a console error (spec 0003, AC-14).
-// A spec that blocks requests on purpose can list the errors it expects.
+// A spec that triggers errors on purpose can name the ones it expects.
 export const test = base.extend<{
   consoleErrors: string[];
-  expectedConsoleErrors: RegExp[];
+  expectedConsoleError: RegExp | null;
 }>({
-  expectedConsoleErrors: [[], { option: true }],
+  expectedConsoleError: [null, { option: true }],
   consoleErrors: [
-    async ({ page, expectedConsoleErrors }, use) => {
+    async ({ page, expectedConsoleError }, use) => {
       const errors: string[] = [];
       page.on("console", (message) => {
         if (message.type() === "error") errors.push(message.text());
@@ -16,7 +16,7 @@ export const test = base.extend<{
       page.on("pageerror", (error) => errors.push(error.message));
       await use(errors);
       const unexpected = errors.filter(
-        (text) => !expectedConsoleErrors.some((pattern) => pattern.test(text)),
+        (text) => !expectedConsoleError?.test(text),
       );
       expect(unexpected, "console errors").toEqual([]);
     },

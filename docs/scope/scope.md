@@ -58,13 +58,13 @@ spec [0002](../specs/0002-data-model/index.md)
 ### 4. Design system & UI foundation · in-progress
 The calm, uncluttered look that makes Luna "Notion, but easier": type, color, spacing, layout shell (sidebar plus page), base components, keyboard focus.
 **Done when:** `design.md` covers type, color, spacing, and components, and base components work fully by keyboard with good contrast.
-spec [0003](../specs/0003-design-system-ui-foundation/index.md)
+spec [0003](../specs/0003-design-system-ui-foundation/index.md) · code in `src/app/globals.css`, `src/features/shell/`, `src/features/design-system/`, `docs/design.md`
 - [x] Design it (spec): `/architect design system & UI foundation`
-- [ ] Build it: `/develop design system & UI foundation`
+- [x] Build it: `/develop design system & UI foundation`
   - [x] M1 token thread: warm paper tokens, Inter, next-themes, `/dev/ui`, axe and contrast tests in both themes (AC-2, AC-3, AC-8, AC-14, AC-15)
   - [x] M2 shell: sidebar, top bar, account menu, mobile drawer, `(app)` layout, `/dev/ui/shell` (AC-3 to AC-6)
   - [x] M3 components and states: overlays, toasts, error and not found pages, sign in restyle (AC-7, AC-9, AC-10, AC-12, AC-13)
-  - [ ] M4 guardrails and docs: color lint rule, keyboard and motion e2e, `docs/design.md` (AC-1, AC-7, AC-9, AC-11)
+  - [x] M4 guardrails and docs: color lint rule, keyboard and motion e2e, `docs/design.md` (AC-1, AC-7, AC-9, AC-11)
 - [ ] Verify it: `/check verify design system & UI foundation`
 
 ## Slice 1: Core writing loop

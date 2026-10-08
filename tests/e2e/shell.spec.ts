@@ -91,7 +91,7 @@ test.describe("desktop shell", () => {
 });
 
 test.describe("theme", () => {
-  test.use({ expectedConsoleErrors: [/Failed to load resource/] });
+  test.use({ expectedConsoleError: /Failed to load resource/ });
 
   test("follows the OS, then the menu choice, across a reload", async ({
     page,
