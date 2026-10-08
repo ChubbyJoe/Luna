@@ -10,7 +10,9 @@ test.describe("desktop shell", () => {
     const sidebar = page.locator("[data-slot=sidebar-container]");
     await expect(sidebar.getByRole("link", { name: "Luna" })).toBeVisible();
     await expect(sidebar.getByText("Pages", { exact: true })).toBeVisible();
-    await expect(sidebar.getByText("No pages yet")).toBeVisible();
+    await expect(
+      sidebar.getByRole("link", { name: "Reading list" }),
+    ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "you@example.com" }),
     ).toBeVisible();
@@ -140,19 +142,24 @@ test.describe("mobile drawer", () => {
     page,
   }) => {
     await page.goto(`${SHELL}/notes`);
-    await expect(page.getByText("No pages yet")).toBeHidden();
+    await expect(page.getByRole("link", { name: "Reading list" })).toBeHidden();
 
     const trigger = page.getByRole("button", { name: "Show sidebar" });
     const drawer = page.getByRole("dialog");
     await trigger.click();
     await expect(drawer).toBeVisible();
-    await expect(drawer.getByText("No pages yet")).toBeVisible();
+    // The open sample page is revealed: its ancestors expand in the drawer.
+    await expect(drawer.getByRole("link", { name: "Notes" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
     await page.keyboard.press("Escape");
     await expect(drawer).toBeHidden();
     await expect(trigger).toBeFocused();
 
     await trigger.click();
-    await drawer.getByRole("link", { name: "Luna" }).click();
+    // The wordmark home link (the sample tree also has a page named Luna).
+    await drawer.locator(`a[href="${SHELL}"]`).click();
     await expect(page).toHaveURL(new RegExp(`${SHELL}$`));
     await expect(drawer).toBeHidden();
     await expect(page.locator("#main")).toBeFocused();

@@ -165,6 +165,7 @@ function Sidebar({
   children,
   dir,
   onMobileCloseAutoFocus = focusSidebarTrigger,
+  onMobileOpenAutoFocus,
   ...props
 }: React.ComponentProps<"div"> & {
   side?: "left" | "right";
@@ -172,6 +173,8 @@ function Sidebar({
   collapsible?: "offcanvas" | "icon" | "none";
   // Where focus goes when the mobile drawer closes.
   onMobileCloseAutoFocus?: (event: Event) => void;
+  // Where focus goes when it opens (Radix picks the first non-link control).
+  onMobileOpenAutoFocus?: (event: Event) => void;
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
@@ -206,6 +209,7 @@ function Sidebar({
           }
           side={side}
           onCloseAutoFocus={onMobileCloseAutoFocus}
+          onOpenAutoFocus={onMobileOpenAutoFocus}
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Sidebar</SheetTitle>

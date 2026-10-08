@@ -16,7 +16,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 3 | Data model | Foundation | in-progress |
 | 4 | Design system & UI foundation | Foundation | done |
 | 5 | Core writing loop | Slice 1 | done |
-| 6 | Page tree & sidebar | Slice 2 | planned |
+| 6 | Page tree & sidebar | Slice 2 | done |
 | 7 | Block editor | Slice 3 | planned |
 | 8 | Trash & restore | Slice 4 | planned |
 | 9 | Favorites | Slice 4 | planned |
@@ -49,7 +49,7 @@ The shapes everything rests on: users, pages (with parent and order for nesting)
 spec [0002](../specs/0002-data-model/index.md)
 - [x] Design it (spec): `/architect data model`
 - [ ] Build it in slices: each feature's `/develop` ships its migration from spec 0002's `## Build plan` (no standalone build)
-  - [ ] M1 pages core + M2 tree rules, with features 5 and 6 (AC-1 to AC-4, AC-9, AC-13, AC-14)
+  - [x] M1 pages core + M2 tree rules, with features 5 and 6 (AC-1 to AC-4, AC-9, AC-13, AC-14)
   - [ ] M3 trash + M4 favorites, with features 8 and 9 (AC-5 to AC-8, AC-15)
   - [ ] M5 search + M6 files + M7 icons and covers, with features 10 to 12 (AC-10, AC-12)
   - [ ] M8 share links, with feature 13 (AC-11)
@@ -84,10 +84,16 @@ spec [0004](../specs/0004-core-writing-loop/index.md) · code in `src/features/p
 
 ## Slice 2: Page tree
 
-### 6. Page tree & sidebar · needs a decision
+### 6. Page tree & sidebar · done
 Pages inside pages, shown as a collapsible tree in the sidebar. Create a sub page, rename, move a page under another, reorder.
 **Done when:** you can nest pages to any depth, move and reorder them in the sidebar, and the tree survives a reload.
-- [ ] Design it (spec): `/architect page tree & sidebar`
+spec [0005](../specs/0005-page-tree-sidebar/index.md) · code in `src/features/pages/`, `supabase/migrations/`, `tests/`
+- [x] Design it (spec): `/architect page tree & sidebar`
+- [x] Build it: `/develop page tree & sidebar`
+  - [x] M1 nest and see the tree: spec 0002 M2 trigger and db tests, tree helpers, expand state per account, recursive sidebar rows with + to add a sub page, reveal, breadcrumb path (AC-1 to AC-5, AC-11)
+  - [x] M2 move with the dialog: placement helpers, optimistic move mutation with rollback, … menu and Move to command dialog, live region, focus refetch, mobile and two tab e2e (AC-8 to AC-10, AC-12 to AC-14)
+  - [x] M3 drag and drop: Pragmatic drag and drop with before, inside, after zones, end zone, hover expand, auto scroll, invalid targets, drag e2e (AC-6 to AC-8, AC-12)
+- [x] Verify it: `/check verify page tree & sidebar`
 
 ## Slice 3: Block editor
 

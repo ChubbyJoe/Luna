@@ -65,3 +65,77 @@ export async function settle(page: Page) {
 export async function caretOffset(page: Page): Promise<number> {
   return page.evaluate(() => getSelection()?.anchorOffset ?? -1);
 }
+
+// Page tree helpers (feature 6).
+
+export function treeLink(page: Page, id: string) {
+  return sidebar(page).locator(`a[href="/p/${id}"]`);
+}
+
+export function chevron(page: Page, title: string) {
+  return sidebar(page).getByRole("button", {
+    name: `Sub pages of ${title}`,
+    exact: true,
+  });
+}
+
+export function addInside(page: Page, title: string) {
+  return sidebar(page).getByRole("button", {
+    name: `Add page inside ${title}`,
+    exact: true,
+  });
+}
+
+export async function openFromTree(page: Page, id: string) {
+  await treeLink(page, id).click();
+  await expect(page).toHaveURL(`/p/${id}`);
+}
+
+// Creates a titled page (top level, or inside `parent`) and waits until it saved.
+export async function createTitledPage(
+  page: Page,
+  title: string,
+  parent?: string,
+): Promise<string> {
+  let id: string;
+  if (parent === undefined) {
+    id = await createPage(page);
+  } else {
+    const before = page.url();
+    await treeLink(page, parent).hover();
+    const parentTitle = await treeLink(page, parent).innerText();
+    await addInside(page, parentTitle).click();
+    await expect(page).not.toHaveURL(before);
+    await expect(page).toHaveURL(PAGE_URL);
+    await expect(titleField(page)).toBeFocused();
+    id = page.url().split("/").at(-1)!;
+  }
+  await titleField(page).fill(title);
+  await expectSaved(page);
+  return id;
+}
+
+// Visible only: Next keeps the previous route mounted, hidden.
+export function breadcrumbTrail(page: Page) {
+  return page
+    .locator("header [data-slot=breadcrumb-item]")
+    .filter({ visible: true });
+}
+
+export function moreActions(page: Page, title: string) {
+  return sidebar(page).getByRole("button", {
+    name: `More actions for ${title}`,
+    exact: true,
+  });
+}
+
+export function liveRegion(page: Page) {
+  return sidebar(page).locator("[aria-live=polite]");
+}
+
+// Is `child` shown inside `parent`'s sub page list?
+export function subPageLink(page: Page, parent: string, child: string) {
+  return page
+    .locator(`li:has(> div a[href="/p/${parent}"]) > ul`)
+    .locator(`a[href="/p/${child}"]`);
+}

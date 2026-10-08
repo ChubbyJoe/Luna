@@ -47,6 +47,16 @@ export function AppSidebar({
     navigatedFromDrawer.current = true;
   }, []);
 
+  // Opening the drawer lands on the open page's row, else the drawer itself,
+  // never on a row button whose tooltip would then swallow the first Escape.
+  function onMobileOpenAutoFocus(event: Event) {
+    event.preventDefault();
+    const drawer = event.currentTarget;
+    if (!(drawer instanceof HTMLElement)) return;
+    const current = drawer.querySelector<HTMLElement>('[aria-current="page"]');
+    (current ?? drawer).focus();
+  }
+
   function onMobileCloseAutoFocus(event: Event) {
     event.preventDefault();
     if (navigatedFromDrawer.current) {
@@ -61,6 +71,7 @@ export function AppSidebar({
     <Sidebar
       collapsible="offcanvas"
       onMobileCloseAutoFocus={onMobileCloseAutoFocus}
+      onMobileOpenAutoFocus={onMobileOpenAutoFocus}
     >
       <CloseDrawerOnNavigate onDrawerNavigate={onDrawerNavigate} />
       <SidebarHeader className="h-11 flex-row items-center justify-between px-3 py-0">
@@ -86,7 +97,8 @@ export function AppSidebar({
         </Tooltip>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
+        {/* Grows, so the page tree's end drop zone fills the space below it. */}
+        <SidebarGroup className="flex-1">
           <SidebarGroupLabel>Pages</SidebarGroupLabel>
           {pagesAction}
           {pages}
