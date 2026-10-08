@@ -1,8 +1,12 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { PageTreeView } from "@/features/pages/components/page-tree";
+import { PageTreeProvider } from "@/features/pages/components/page-tree-provider";
+import type { PageListItem } from "@/features/pages/schemas";
 import { AppSidebar } from "@/features/shell/components/app-sidebar";
 import { PageColumn } from "@/features/shell/components/page-column";
 import { SkipLink } from "@/features/shell/components/skip-link";
@@ -17,7 +21,41 @@ const SAMPLE_BREADCRUMBS = SAMPLE_TITLES.map((title) => ({
   href: `${SHELL_ROOT}/${title.toLowerCase()}`,
 }));
 
+// A small nested tree: the breadcrumb chain, plus a sibling and a top level page.
+const SAMPLE_TREE: PageListItem[] = [
+  ...SAMPLE_BREADCRUMBS.map((item, index) => ({
+    id: item.id,
+    parent_id: index === 0 ? null : SAMPLE_BREADCRUMBS[index - 1].id,
+    position: "a0",
+    title: item.title,
+  })),
+  { id: "ideas", parent_id: "work", position: "a1", title: "Ideas" },
+  { id: "reading", parent_id: null, position: "a1", title: "Reading list" },
+];
+const NO_SESSIONS = new Map<string, { snapshot: { title: string } }>();
+
 function signOutPreview() {}
+function addChildPreview() {}
+
+function previewHref(id: string) {
+  return `${SHELL_ROOT}/${id}`;
+}
+
+function PreviewTree() {
+  const pathname = usePathname();
+  const activeId = pathname.startsWith(`${SHELL_ROOT}/`)
+    ? pathname.slice(SHELL_ROOT.length + 1)
+    : null;
+  return (
+    <PageTreeView
+      list={SAMPLE_TREE}
+      activeId={activeId}
+      sessions={NO_SESSIONS}
+      hrefFor={previewHref}
+      onAddChild={addChildPreview}
+    />
+  );
+}
 
 // The real shell pieces with sample data, mirroring the (app) layout.
 export function ShellPreview({
@@ -31,14 +69,17 @@ export function ShellPreview({
     <>
       <SkipLink />
       <SidebarProvider defaultOpen={defaultOpen} className="flex-1">
-        <AppSidebar
-          email={SAMPLE_EMAIL}
-          homeHref={SHELL_ROOT}
-          onSignOut={signOutPreview}
-        />
-        <SidebarInset id="main" tabIndex={-1} className="outline-none">
-          {children}
-        </SidebarInset>
+        <PageTreeProvider userId="preview">
+          <AppSidebar
+            email={SAMPLE_EMAIL}
+            homeHref={SHELL_ROOT}
+            onSignOut={signOutPreview}
+            pages={<PreviewTree />}
+          />
+          <SidebarInset id="main" tabIndex={-1} className="outline-none">
+            {children}
+          </SidebarInset>
+        </PageTreeProvider>
       </SidebarProvider>
     </>
   );

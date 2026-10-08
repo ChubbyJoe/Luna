@@ -19,7 +19,7 @@ function useNewPage() {
   const { isSuccess } = useQuery(pageListQueryOptions());
   const createPage = useCreatePage();
   return {
-    create: () => createPage.mutate(),
+    create: () => createPage.mutate({ parentId: null }),
     disabled: !isSuccess || createPage.isPending,
   };
 }

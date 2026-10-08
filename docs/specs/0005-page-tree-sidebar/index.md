@@ -1,7 +1,7 @@
 # 0005. Page tree and sidebar: a nested page tree with drag, Move to, and per account expand state
 
 **Date**: 2026-10-08
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 

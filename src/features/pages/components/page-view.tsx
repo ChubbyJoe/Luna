@@ -11,6 +11,7 @@ import { RouteError } from "@/features/shell/components/route-error";
 import { TopBar } from "@/features/shell/components/top-bar";
 
 import { blocksToPlainText } from "../blocks-to-plain-text";
+import { usePageBreadcrumbs } from "../hooks/use-page-breadcrumbs";
 import { usePendingSaves, useSession } from "../pending-saves";
 import { pageDetailQueryOptions, pageKeys } from "../queries";
 import type { ServerPage } from "../save-machine";
@@ -151,6 +152,7 @@ function EditorView({
   const title = session?.snapshot.title ?? origin.title;
   const display = displayTitle(title);
   useDocumentTitle(display);
+  const breadcrumbs = usePageBreadcrumbs(pageId, display);
 
   // The version the first edit opens a session from: the cache tracks every
   // save, so it is never older than what this view started with.
@@ -208,10 +210,7 @@ function EditorView({
 
   return (
     <>
-      <TopBar
-        breadcrumbs={[{ id: pageId, title: display, href: `/p/${pageId}` }]}
-        status={session?.status}
-      />
+      <TopBar breadcrumbs={breadcrumbs} status={session?.status} />
       <PageColumn>
         {session?.state === "conflict" && (
           <ConflictNotice

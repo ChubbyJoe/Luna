@@ -16,6 +16,10 @@ export const pageKeys = {
   detail: (id: string) => ["pages", "detail", id] as const,
 };
 
+// Creates and moves share it (and one mutation scope), so tree writes from a
+// tab run one at a time, in the order you made them (spec 0005).
+export const PAGE_TREE_MUTATION_KEY = ["pages", "tree"] as const;
+
 export const PAGE_LIST_COLUMNS = "id, parent_id, position, title";
 export const PAGE_DETAIL_COLUMNS = "id, title, content, updated_at";
 const LIST_RANGE = 1000;

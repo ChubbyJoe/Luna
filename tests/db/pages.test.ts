@@ -214,3 +214,130 @@ describe("updated_at guard", () => {
     expect(renamed.data?.updated_at).not.toBe(page.updated_at);
   });
 });
+
+// Spec 0005 AC-11: spec 0002 M2 tree rules through private.check_page_parent().
+describe("tree rules", () => {
+  async function child(client: Client, parentId: string | null) {
+    const id = crypto.randomUUID();
+    const { error } = await client
+      .from("pages")
+      .insert({ id, position: "a0", parent_id: parentId });
+    if (error) throw new Error(`insert failed: ${error.code} ${error.message}`);
+    created.push(id);
+    return id;
+  }
+
+  async function chain(length: number): Promise<string[]> {
+    const ids: string[] = [];
+    for (let level = 0; level < length; level++) {
+      ids.push(await child(a, ids.at(-1) ?? null));
+    }
+    return ids;
+  }
+
+  async function parentOf(id: string) {
+    const { data } = await a
+      .from("pages")
+      .select("parent_id")
+      .eq("id", id)
+      .single();
+    return data?.parent_id;
+  }
+
+  it("rejects a move under its own grandchild with LN001 and changes nothing", async () => {
+    const [top, middle, bottom] = await chain(3);
+    const { error } = await a
+      .from("pages")
+      .update({ parent_id: bottom })
+      .eq("id", top);
+    expect(error?.code).toBe("LN001");
+    expect(await parentOf(top)).toBeNull();
+    expect(await parentOf(bottom)).toBe(middle);
+  });
+
+  it("rejects a page as its own parent", async () => {
+    const page = await child(a, null);
+    const { error } = await a
+      .from("pages")
+      .update({ parent_id: page })
+      .eq("id", page);
+    expect(error?.code).toBe("LN001");
+  });
+
+  it("applies exactly one of two crossing moves made at the same time", async () => {
+    // A second session for the same account, so the two updates really overlap.
+    const second = await signedInClient(testEnv().emailA);
+    const x = await child(a, null);
+    const y = await child(a, null);
+    const results = await Promise.all([
+      a.from("pages").update({ parent_id: y }).eq("id", x),
+      second.from("pages").update({ parent_id: x }).eq("id", y),
+    ]);
+    const codes = results.map((result) => result.error?.code ?? "ok").sort();
+    expect(codes).toEqual(["LN001", "ok"]);
+    const parents = [await parentOf(x), await parentOf(y)];
+    expect(parents.filter((parent) => parent === null)).toHaveLength(1);
+  });
+
+  it("allows 64 levels and rejects the 65th with LN003", async () => {
+    const ids = await chain(64);
+    const { error } = await a
+      .from("pages")
+      .insert({ position: "a0", parent_id: ids.at(-1) });
+    expect(error?.code).toBe("LN003");
+  }, 120_000);
+
+  it("rejects moving a two level subtree under level 63 with LN003", async () => {
+    const ids = await chain(63);
+    const [top] = await chain(2);
+    const { error } = await a
+      .from("pages")
+      .update({ parent_id: ids.at(-1) })
+      .eq("id", top);
+    expect(error?.code).toBe("LN003");
+    expect(await parentOf(top)).toBeNull();
+  }, 120_000);
+
+  it("rejects a move under a parent of another account with 23503", async () => {
+    const page = await child(a, null);
+    const foreign = crypto.randomUUID();
+    const insert = await b
+      .from("pages")
+      .insert({ id: foreign, position: "a0" });
+    expect(insert.error).toBeNull();
+    try {
+      const { error } = await a
+        .from("pages")
+        .update({ parent_id: foreign })
+        .eq("id", page);
+      expect(error?.code).toBe("23503");
+    } finally {
+      await b.from("pages").delete().eq("id", foreign);
+    }
+  });
+
+  it("still allows a reorder that only changes position", async () => {
+    const parent = await child(a, null);
+    const page = await child(a, parent);
+    const { data, error } = await a
+      .from("pages")
+      .update({ position: "b0", parent_id: parent })
+      .eq("id", page)
+      .select("position, parent_id")
+      .single();
+    expect(error).toBeNull();
+    expect(data).toEqual({ position: "b0", parent_id: parent });
+  });
+
+  it("account B cannot move A's page", async () => {
+    const parent = await child(a, null);
+    const page = await child(a, null);
+    const { data } = await b
+      .from("pages")
+      .update({ parent_id: parent })
+      .eq("id", page)
+      .select("id");
+    expect(data).toEqual([]);
+    expect(await parentOf(page)).toBeNull();
+  });
+});
