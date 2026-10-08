@@ -147,7 +147,7 @@ Keyboard focus only (`:focus-visible`), a solid `--ring` color, never at partial
 - Any duration above 150ms becomes `duration-150`, and `ease-linear` becomes `ease-out`.
 - Text at partial opacity becomes a checked token (the sidebar group label uses `text-muted-foreground`).
 
-Edits specific to `sidebar.tsx`: shortcut `"\\"` (Cmd+\ or Ctrl+\; Cmd+B is bold in the editor), cookie max age one year, width `16.25rem`, `data-state` on the wrapper, `inert` on the desktop container while collapsed, and `onMobileCloseAutoFocus` on the drawer (Radix has no trigger to return focus to, because the drawer opens from state). `src/hooks/use-mobile.ts` uses `useSyncExternalStore` over `matchMedia`.
+Edits specific to `sidebar.tsx`: shortcut `"\\"` (Cmd+\ or Ctrl+\; Cmd+B is bold in the editor), cookie max age one year, width `16.25rem`, `data-state` on the wrapper, `inert` on the desktop container while collapsed, `onMobileCloseAutoFocus` on the drawer (Radix has no trigger to return focus to, because the drawer opens from state), and `onMobileOpenAutoFocus` (opening lands on the open page's row, or the drawer itself, never on a row button whose tooltip would swallow the first Escape). `src/hooks/use-mobile.ts` uses `useSyncExternalStore` over `matchMedia`.
 
 ## Shell anatomy
 
@@ -179,7 +179,7 @@ Everything lives in `src/features/shell/`.
 
 ## Component inventory
 
-In `src/components/ui/` (shadcn `radix-nova`, after the ui edit pass): `alert-dialog`, `breadcrumb`, `button`, `dialog`, `dropdown-menu`, `input`, `label`, `popover`, `scroll-area`, `separator`, `sheet`, `sidebar`, `skeleton`, `sonner`, `tooltip`. Later features add their own (`command` with search, `context-menu` with the page tree), each followed by the ui edit pass.
+In `src/components/ui/` (shadcn `radix-nova`, after the ui edit pass): `alert-dialog`, `breadcrumb`, `button`, `command` (with its `input-group` and `textarea`, added with the page tree's Move to dialog; search reuses it), `dialog`, `dropdown-menu`, `input`, `label`, `popover`, `scroll-area`, `separator`, `sheet`, `sidebar`, `skeleton`, `sonner`, `tooltip`. Later features add their own, each followed by the ui edit pass.
 
 Luna's own pieces: `PageColumn`, `TopBar`, `AppSidebar`, `AccountMenu`, `SkipLink`, `Wordmark`, `EmptyState`, `RouteError` (all in `src/features/shell/components/`), and `notify` (`src/lib/notify.ts`).
 

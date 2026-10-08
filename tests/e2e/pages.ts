@@ -121,3 +121,21 @@ export function breadcrumbTrail(page: Page) {
     .locator("header [data-slot=breadcrumb-item]")
     .filter({ visible: true });
 }
+
+export function moreActions(page: Page, title: string) {
+  return sidebar(page).getByRole("button", {
+    name: `More actions for ${title}`,
+    exact: true,
+  });
+}
+
+export function liveRegion(page: Page) {
+  return sidebar(page).locator("[aria-live=polite]");
+}
+
+// Is `child` shown inside `parent`'s sub page list?
+export function subPageLink(page: Page, parent: string, child: string) {
+  return page
+    .locator(`li:has(> div a[href="/p/${parent}"]) > ul`)
+    .locator(`a[href="/p/${child}"]`);
+}

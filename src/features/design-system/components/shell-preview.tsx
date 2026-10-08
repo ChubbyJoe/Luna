@@ -36,6 +36,7 @@ const NO_SESSIONS = new Map<string, { snapshot: { title: string } }>();
 
 function signOutPreview() {}
 function addChildPreview() {}
+function movePreview() {}
 
 function previewHref(id: string) {
   return `${SHELL_ROOT}/${id}`;
@@ -53,6 +54,7 @@ function PreviewTree() {
       sessions={NO_SESSIONS}
       hrefFor={previewHref}
       onAddChild={addChildPreview}
+      onMove={movePreview}
     />
   );
 }

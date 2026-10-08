@@ -40,8 +40,14 @@ async function fetchPageList(): Promise<PageListItem[]> {
   }
 }
 
+// Refetched on every focus, past the global staleTime, so a move made in
+// another tab shows up when you come back (spec 0005 AC-14).
 export function pageListQueryOptions() {
-  return queryOptions({ queryKey: pageKeys.list(), queryFn: fetchPageList });
+  return queryOptions({
+    queryKey: pageKeys.list(),
+    queryFn: fetchPageList,
+    refetchOnWindowFocus: "always",
+  });
 }
 
 // Null means not found, or not yours: RLS makes the two look the same.
