@@ -13,8 +13,8 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 |---|---------|-------|--------|
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
-| 3 | Data model | Foundation | planned |
-| 4 | Design system & UI foundation | Foundation | planned |
+| 3 | Data model | Foundation | in-progress |
+| 4 | Design system & UI foundation | Foundation | in-progress |
 | 5 | Core writing loop | Slice 1 | planned |
 | 6 | Page tree & sidebar | Slice 2 | planned |
 | 7 | Block editor | Slice 3 | planned |
@@ -43,15 +43,29 @@ code in `package.json`, `eslint.config.mjs`, `.prettierrc.json`, `.husky/`
 - [x] Capture conventions + tooling choices: `/audit`
 - [x] Install the chosen tooling: `/develop tooling`
 
-### 3. Data model · needs a decision
+### 3. Data model · in-progress
 The shapes everything rests on: users, pages (with parent and order for nesting), blocks and their content, soft delete, favorites, icons and covers, uploaded files, share links.
 **Done when:** the model supports nesting, block ordering, trash, favorites, uploads, and share links without a breaking migration later.
-- [ ] Design it (spec): `/architect data model`
+spec [0002](../specs/0002-data-model/index.md)
+- [x] Design it (spec): `/architect data model`
+- [ ] Build it in slices: each feature's `/develop` ships its migration from spec 0002's `## Build plan` (no standalone build)
+  - [ ] M1 pages core + M2 tree rules, with features 5 and 6 (AC-1 to AC-4, AC-9, AC-13, AC-14)
+  - [ ] M3 trash + M4 favorites, with features 8 and 9 (AC-5 to AC-8, AC-15)
+  - [ ] M5 search + M6 files + M7 icons and covers, with features 10 to 12 (AC-10, AC-12)
+  - [ ] M8 share links, with feature 13 (AC-11)
+- [ ] Verify it: `/check verify data model`
 
-### 4. Design system & UI foundation · needs a decision
+### 4. Design system & UI foundation · in-progress
 The calm, uncluttered look that makes Luna "Notion, but easier": type, color, spacing, layout shell (sidebar plus page), base components, keyboard focus.
 **Done when:** `design.md` covers type, color, spacing, and components, and base components work fully by keyboard with good contrast.
-- [ ] Design it (spec): `/architect design system & UI foundation`
+spec [0003](../specs/0003-design-system-ui-foundation/index.md)
+- [x] Design it (spec): `/architect design system & UI foundation`
+- [ ] Build it: `/develop design system & UI foundation`
+  - [ ] M1 token thread: warm paper tokens, Inter, next-themes, `/dev/ui`, axe and contrast tests in both themes (AC-2, AC-3, AC-8, AC-14, AC-15)
+  - [ ] M2 shell: sidebar, top bar, account menu, mobile drawer, `(app)` layout, `/dev/ui/shell` (AC-3 to AC-6)
+  - [ ] M3 components and states: overlays, toasts, error and not found pages, sign in restyle (AC-7, AC-9, AC-10, AC-12, AC-13)
+  - [ ] M4 guardrails and docs: color lint rule, keyboard and motion e2e, `docs/design.md` (AC-1, AC-7, AC-9, AC-11)
+- [ ] Verify it: `/check verify design system & UI foundation`
 
 ## Slice 1: Core writing loop
 
