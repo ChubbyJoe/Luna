@@ -2,6 +2,9 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* BlockNote's shadcn UI uses Tailwind classes from its own package. */
+@source "../../node_modules/@blocknote/shadcn";
+
 @custom-variant dark (&:is(.dark *));
 
 /* Luna design tokens. Every value here is documented in docs/design.md;
@@ -181,4 +184,21 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* The page editor (feature 5): BlockNote inside the page column, in Luna's
+   type and ink. No side menu, so no gutter; nothing animates on content. */
+.luna-editor .bn-editor {
+  padding-inline: 0;
+  background-color: transparent;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+}
+.luna-editor .bn-block-content {
+  transition: none;
+}
+.luna-editor .bn-block-content:after {
+  color: var(--muted-foreground);
 }

@@ -2,7 +2,7 @@
 
 import { ChevronsLeftIcon } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,11 +29,16 @@ export function AppSidebar({
   email,
   homeHref = "/",
   onSignOut,
+  pages = <EmptyState>No pages yet</EmptyState>,
+  pagesAction,
 }: {
   email?: string;
   // The shell preview keeps its links inside /dev/ui/shell.
   homeHref?: string;
   onSignOut?: () => void;
+  // The app passes the live page list and New page; the preview keeps samples.
+  pages?: ReactNode;
+  pagesAction?: ReactNode;
 }) {
   const { toggleSidebar } = useSidebar();
   // Set when a link inside the drawer navigates, read when the drawer closes.
@@ -83,7 +88,8 @@ export function AppSidebar({
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Pages</SidebarGroupLabel>
-          <EmptyState>No pages yet</EmptyState>
+          {pagesAction}
+          {pages}
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>

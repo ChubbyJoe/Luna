@@ -15,7 +15,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Data model | Foundation | in-progress |
 | 4 | Design system & UI foundation | Foundation | done |
-| 5 | Core writing loop | Slice 1 | planned |
+| 5 | Core writing loop | Slice 1 | done |
 | 6 | Page tree & sidebar | Slice 2 | planned |
 | 7 | Block editor | Slice 3 | planned |
 | 8 | Trash & restore | Slice 4 | planned |
@@ -69,10 +69,18 @@ spec [0003](../specs/0003-design-system-ui-foundation/index.md) · code in `src/
 
 ## Slice 1: Core writing loop
 
-### 5. Core writing loop · needs a decision · Beta
+### 5. Core writing loop · Beta · done
 The thinnest real thread: sign in, create a page, give it a title, type plain text paragraphs, and it saves to the server as you type. Reload and it is still there. This slice is the walking skeleton.
 **Done when:** you can sign in, create a page, type into it, reload, and see your text; another account cannot see your pages.
-- [ ] Design it (spec): `/architect core writing loop`
+spec [0004](../specs/0004-core-writing-loop/index.md) · code in `src/features/pages/`, `src/app/(app)/`, `supabase/migrations/`, `tests/`
+- [x] Design it (spec): `/architect core writing loop`
+- [x] Build it: `/develop core writing loop`
+  - [x] M1 thin thread: spec 0002 M1 migration and types, test sign in setup and RLS db suite, sidebar list and New page, home redirect, `/p/<id>` with title and paragraph only BlockNote, first debounced save (AC-1 to AC-5, AC-10, AC-11, AC-13)
+  - [x] M2 save robustness: full save sessions in the registry, max wait and flushes, retries and toasts, leave warning, sign out flush (AC-3, AC-8, AC-9, AC-12, AC-14)
+  - [x] M3 conflict guard: `updated_at` conflict check, Load newer and Keep mine notice, gone state (AC-7, AC-14)
+  - [x] M4 writing feel: title keyboard moves, live title everywhere, autofocus, placeholder, unknown block guard (AC-5, AC-6)
+- [x] Verify it: `/check verify core writing loop`
+- [x] Test it: `/test core writing loop`
 
 ## Slice 2: Page tree
 
