@@ -71,10 +71,18 @@ export function PageLoading() {
   );
 }
 
-function focusStart(editor: PageEditorInstance) {
+function focusStart(editor: PageEditorInstance, retries = 3) {
   const first = editor.document[0];
   if (first) editor.setTextCursorPosition(first, "start");
   editor.focus();
+  // A freshly mounted editor can drop focus as it finishes setting up. If the
+  // caret fell to the page (and nothing else took it), put it back.
+  if (retries === 0) return;
+  requestAnimationFrame(() => {
+    if (document.activeElement === document.body) {
+      focusStart(editor, retries - 1);
+    }
+  });
 }
 
 function fromDetail(page: PageDetail): ServerPage {

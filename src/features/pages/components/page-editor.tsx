@@ -57,16 +57,18 @@ function plainParagraphs(text: string): string {
     .join("");
 }
 
-// The caret sits before the first character of the first block.
-export function isAtBodyStart(editor: PageEditorInstance): boolean {
-  const { selection } = editor.prosemirrorState;
-  const first = editor.document[0];
-  return (
-    selection.empty &&
-    selection.$from.parentOffset === 0 &&
-    first !== undefined &&
-    editor.getTextCursorPosition().block.id === first.id
-  );
+// The caret sits before the first character of the first block. Read from
+// the DOM: this runs before ProseMirror's own keydown handler, which is when
+// ProseMirror catches its selection up with the caret.
+function isAtBodyStart(root: HTMLElement): boolean {
+  const selection = window.getSelection();
+  if (!selection?.isCollapsed || !selection.anchorNode) return false;
+  const first = root.querySelector(".bn-editor [data-content-type]");
+  if (!first?.contains(selection.anchorNode)) return false;
+  const before = document.createRange();
+  before.selectNodeContents(first);
+  before.setEnd(selection.anchorNode, selection.anchorOffset);
+  return before.toString() === "";
 }
 
 export function PageEditor({
@@ -102,9 +104,15 @@ export function PageEditor({
     },
   });
 
+  // Hand the editor over only once its view is mounted: focusing it before
+  // that drops the focus as soon as the view replaces its element.
   useEffect(() => {
-    onEditor(editor);
-    return () => onEditor(null);
+    if (editor.domElement) onEditor(editor);
+    const unsubscribe = editor.onMount(() => onEditor(editor));
+    return () => {
+      unsubscribe();
+      onEditor(null);
+    };
   }, [editor, onEditor]);
 
   function onKeyDownCapture(event: KeyboardEvent<HTMLDivElement>) {
@@ -112,7 +120,7 @@ export function PageEditor({
     if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
       return;
     }
-    if (!isAtBodyStart(editor)) return;
+    if (!isAtBodyStart(event.currentTarget)) return;
     event.preventDefault();
     event.stopPropagation();
     onExitTop();
